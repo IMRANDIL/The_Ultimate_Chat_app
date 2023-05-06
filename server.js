@@ -5,6 +5,7 @@ const connectDB = require("./Config/dbConfig");
 const cors = require("cors");
 const compression = require("compression");
 const logger = require("./Utils/logger");
+const { customErrorHandler } = require("./Middlewares/customErrorMiddleware");
 
 const app = express();
 
@@ -15,7 +16,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 app.use(cors());
 
-//connect the db with starting the server
+//routing middleware comes here
+
+//custom error middleware comes here
+
+app.use(customErrorHandler);
 
 // Connect to the database and start the server
 connectDB()
