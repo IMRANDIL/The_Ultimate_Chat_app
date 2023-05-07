@@ -154,6 +154,17 @@ class UserController {
       return next(error);
     }
   };
+
+  static allUsers = async (req, res, next) => {
+    try {
+      const allUser = await User.find({}, "_id email username");
+      res.status(200).json({
+        data: allUser,
+      });
+    } catch (error) {
+      return next(error.message);
+    }
+  };
 }
 
 module.exports = UserController;
