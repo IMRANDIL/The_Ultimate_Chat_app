@@ -131,6 +131,19 @@ class UserController {
       return next(error);
     }
   };
+
+  static getNewAccessToken = async (req, res, next) => {
+    try {
+      const accessToken = await generateJWTToken(
+        req.user.id,
+        process.env.JWT_SECRET,
+        process.env.JWT_SECRET_EXPIRATION
+      );
+      return res.status(200).json({ accessToken });
+    } catch (error) {
+      return next(error);
+    }
+  };
 }
 
 module.exports = UserController;
