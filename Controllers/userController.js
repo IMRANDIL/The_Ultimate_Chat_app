@@ -222,6 +222,52 @@ class UserController {
       return next(error);
     }
   };
+
+  static resetPassword = async (req, res, next) => {
+    try {
+      let user;
+      const { resetToken, newPassword } = req.body;
+
+      if (!resetToken || !newPassword) {
+        const err = new Error("Reset token and new password are required!");
+        err.statusCode = 400;
+        err.code = "MISSING_FIELD";
+        return next(err);
+      }
+
+      try {
+        // Check if the reset token is valid and has not expired
+        user = await User.findOne({
+          resetToken,
+          resetTokenExpiration: { $gt: Date.now() },
+        });
+
+        if (!user) {
+          const err = new Error("Invalid or expired reset token!");
+          err.statusCode = 400;
+          err.code = "INVALID_RESET_TOKEN";
+          return next(err);
+        }
+
+        // Set the new password
+        user.password = newPassword;
+        // Clear the reset token and expiration
+        user.resetToken = undefined;
+        user.resetTokenExpiration = undefined;
+        // Save the updated user object
+        await user.save();
+      } catch (error) {
+        const err = new Error(err.message);
+        err.statusCode = 400;
+        err.code = "VALIDATION_ERROR";
+      }
+
+      // Send a success response
+      res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+      return next(error);
+    }
+  };
 }
 
 module.exports = UserController;

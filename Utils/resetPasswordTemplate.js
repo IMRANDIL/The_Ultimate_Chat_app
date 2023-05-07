@@ -33,7 +33,7 @@ const resetPasswordTemplate = (resetToken, resetUrl) => `
     <body>
       <div class="container">
         <div class="logo">
-          <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Logo" width="200">
+          <img src="https://media.giphy.com/media/buBD8D3baYh9Un2HXR/giphy-downsized-large.gif" alt="Logo" width="200">
         </div>
         <h2>Password Reset</h2>
         <p>You have requested a password reset.</p>
