@@ -19,12 +19,13 @@ class UserController {
         err.code = "MISSING_FIELDS"; // Set custom error code
         return next(err);
       }
-      // Check if the username is already taken
-      const isUsernameTaken = await UserUtility.isUsernameUnique(username);
-      if (isUsernameTaken) {
-        const err = new Error(isUsernameTaken);
-        err.statusCode = 409; // Conflict - Username already exists
-        err.code = "USERNAME_EXISTS"; // Set custom error code
+      //check if email is in valid format....at first..
+      const isValidEmail = validateEmail(email);
+
+      if (!isValidEmail) {
+        const err = new Error("Invalid Email!");
+        err.statusCode = 400;
+        err.code = "INVALID_EMAIL_FORMAT"; // Set custom error code
         return next(err);
       }
 
@@ -36,6 +37,16 @@ class UserController {
         err.code = "EMAIL_EXISTS"; // Set custom error code
         return next(err);
       }
+
+      // Check if the username is already taken
+      const isUsernameTaken = await UserUtility.isUsernameUnique(username);
+      if (isUsernameTaken) {
+        const err = new Error(isUsernameTaken);
+        err.statusCode = 409; // Conflict - Username already exists
+        err.code = "USERNAME_EXISTS"; // Set custom error code
+        return next(err);
+      }
+
       const ipAddress = getIPAddress(req);
       //now save the user in the db
       const user = new User({
