@@ -1,10 +1,11 @@
 const jwt = require("jsonwebtoken");
 
-exports.generateJWTToken = async (payload, jwtSecret, jwtExpiry) => {
+exports.generateJWTToken = async (userId, jwtSecret, jwtExpiry) => {
   // Generate the JWT token with the provided secret and expiry
-  const token = await jwt.sign(payload, jwtSecret, { expiresIn: jwtExpiry });
-
-  return token;
+  const accessToken = await jwt.sign({ id: userId }, jwtSecret, {
+    expiresIn: `${jwtExpiry}`,
+  });
+  return accessToken;
 };
 
 exports.getIPAddress = (req) => {

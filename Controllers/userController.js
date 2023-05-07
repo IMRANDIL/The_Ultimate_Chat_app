@@ -71,6 +71,7 @@ class UserController {
 
   static userLogin = async (req, res, next) => {
     try {
+      let user;
       const { email, password } = req.body;
       if (!email || !password) {
         const err = new Error("All the fields required!");
@@ -95,25 +96,33 @@ class UserController {
         err.code = "NOT_FOUND"; // Set custom error code
         return next(err);
       }
-      const isPasswordMatch = await isUserExist.comparePassword(password);
-      if (!isPasswordMatch) {
-        const err = new Error("Invalid Credentials!");
-        err.statusCode = 401;
-        err.code = "INVALID_CREDENTIALS"; // Set custom error code
-        return next(err);
+      try {
+        user = await User.findOne({ email });
+        const isPasswordMatch = await user.comparePassword(password);
+        if (!isPasswordMatch) {
+          const err = new Error("Invalid Credentials!");
+          err.statusCode = 401;
+          err.code = "INVALID_CREDENTIALS"; // Set custom error code
+          return next(err);
+        }
+
+        const ipAddress = getIPAddress(req);
+        user.ipAddress = ipAddress;
+        await user.save();
+      } catch (error) {
+        const err = new Error(error.message);
+        err.statusCode = 400;
+        err.code = "VALIDATION_ERROR";
       }
 
-      const ipAddress = getIPAddress(req);
-      isUserExist.ipAddress = ipAddress;
-      await isUserExist.save();
       const accessToken = await generateJWTToken(
-        isUserExist._id,
+        user._id,
         process.env.JWT_SECRET,
         process.env.JWT_SECRET_EXPIRATION
       );
 
       const refreshToken = await generateJWTToken(
-        isUserExist._id,
+        user._id,
         process.env.JWT_REFRESH_SECRET,
         process.env.JWT_REFRESH_SECRET_EXPIRATION
       );
@@ -122,12 +131,13 @@ class UserController {
       res.status(200).json({
         accessToken,
         refreshToken,
-        email: isUserExist.email,
-        username: isUserExist.username,
+        email: user.email,
+        username: user.username,
       });
 
       //
     } catch (error) {
+      console.log(error);
       return next(error);
     }
   };
