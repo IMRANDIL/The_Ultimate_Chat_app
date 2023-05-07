@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 exports.generateJWTToken = async (userId, jwtSecret, jwtExpiry) => {
   // Generate the JWT token with the provided secret and expiry
@@ -22,4 +23,9 @@ exports.validateEmail = (email) => {
   // Regular expression for email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+};
+
+exports.generateUniqueResetToken = () => {
+  const token = crypto.randomBytes(32).toString("hex");
+  return token;
 };

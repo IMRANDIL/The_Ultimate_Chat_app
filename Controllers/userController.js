@@ -7,6 +7,7 @@ const {
   getIPAddress,
   generateJWTToken,
   validateEmail,
+  generateUniqueResetToken,
 } = require("../Utils/utils");
 
 class UserController {
@@ -163,6 +164,60 @@ class UserController {
       });
     } catch (error) {
       return next(error.message);
+    }
+  };
+
+  static forgotPassword = async (req, res, next) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        const err = new Error("Email is required!");
+        err.statusCode = 400;
+        err.code = "MISSING_FIELD"; // Set custom error code
+        return next(err);
+      }
+
+      // Validate the email format
+      const isValidEmail = validateEmail(email);
+      if (!isValidEmail) {
+        const err = new Error("Invalid Email!");
+        err.statusCode = 400;
+        err.code = "INVALID_EMAIL_FORMAT";
+        return next(err);
+      }
+
+      try {
+        // Check if the user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+          const err = new Error("User not found!");
+          err.statusCode = 404;
+          err.code = "USER_NOT_FOUND";
+          return next(err);
+        }
+
+        // Generate a unique reset token and save it to the user object
+        const resetToken = generateUniqueResetToken();
+        const resetTokenExpiration = Date.now() + 3600000; // Token expiration time (1 hour)
+        await User.updateOne(
+          { _id: user._id },
+          { $set: { resetToken, resetTokenExpiration } }
+        ); //without the model validation..direct
+      } catch (error) {
+        const err = new Error(error.message);
+        err.statusCode = 400;
+        err.code = "VALIDATION_ERROR";
+      }
+
+      // Send an email to the user with the reset token
+      // sendResetPasswordEmail(user.email, resetToken);
+      // Send a success response
+      res
+        .status(200)
+        .json({ message: "Reset token sent to the email address" });
+    } catch (error) {
+      return next(error);
     }
   };
 }
