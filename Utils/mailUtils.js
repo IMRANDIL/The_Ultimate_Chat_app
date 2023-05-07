@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const resetPasswordTemplate = require("./resetPasswordTemplate");
 
 // Function to send the reset password email
 const sendResetPasswordEmail = async (email, resetToken, next) => {
@@ -19,10 +20,8 @@ const sendResetPasswordEmail = async (email, resetToken, next) => {
       from: process.env.EMAIL_FROM, // Sender email address
       to: email, // Recipient email address
       subject: "Password Reset", // Email subject
-      text: `You have requested a password reset. Please click the following link to reset your password: ${process.env.RESET_PASSWORD_URL}/${resetToken}`, // Plain text body
-      html: `<p>You have requested a password reset. Please click the following link to reset your password:</p><p><a href="${process.env.RESET_PASSWORD_URL}/${resetToken}">Reset Password</a></p>`, // HTML body
+      html: resetPasswordTemplate(resetToken, process.env.RESET_PASSWORD_URL),
     };
-
     // Send the email
     await transporter.sendMail(message);
   } catch (error) {

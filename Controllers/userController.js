@@ -171,7 +171,7 @@ class UserController {
   static forgotPassword = async (req, res, next) => {
     try {
       const { email } = req.body;
-      let user;
+      let user, resetToken;
 
       if (!email) {
         const err = new Error("Email is required!");
@@ -200,7 +200,7 @@ class UserController {
         }
 
         // Generate a unique reset token and save it to the user object
-        const resetToken = generateUniqueResetToken();
+        resetToken = generateUniqueResetToken();
         const resetTokenExpiration = Date.now() + 3600000; // Token expiration time (1 hour)
         await User.updateOne(
           { _id: user._id },
