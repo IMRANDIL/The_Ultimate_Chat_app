@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
           return emailRegex.test(email);
         },
         message: "Invalid email address",
+        code: "INVALID_EMAIL", // Set the error code for invalid email
       },
     },
     username: {
@@ -32,12 +33,24 @@ const userSchema = new mongoose.Schema(
           return usernameRegex.test(username);
         },
         message: "Username can only contain letters and numbers",
+        code: "INVALID_USERNAME", // Set the error code for invalid username
       },
     },
     password: {
       type: String,
       required: true,
       minlength: 8,
+      validate: {
+        validator: function (password) {
+          // Regular expression for password with alphanumeric and special characters
+          const passwordRegex =
+            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+          return passwordRegex.test(password);
+        },
+        message:
+          "Password must be alphanumeric and have a minimum length of 8 characters, including at least one special character",
+        code: "INVALID_PASSWORD", // Set the error code for invalid password
+      },
     },
     ipAddress: {
       type: String,

@@ -18,3 +18,13 @@ exports.customErrorHandler = (err, req, res, next) => {
   // Send the appropriate status code and error message to the client
   res.status(status).json({ error: { message, code: errorCode } });
 };
+
+exports.handleValidationError = (error, field, next) => {
+  if (error.name === "ValidationError" && error.errors && error.errors[field]) {
+    const validationError = error.errors[field];
+    const err = new Error(`${validationError.message}`);
+    err.statusCode = 400;
+    err.code = "VALIDATION_ERROR";
+    return next(err);
+  }
+};

@@ -1,3 +1,6 @@
+const {
+  handleValidationError,
+} = require("../Middlewares/customErrorMiddleware");
 const User = require("../Models/userModel");
 const UserUtility = require("../Utils/userUtility");
 const { getIPAddress } = require("../Utils/utils");
@@ -9,6 +12,7 @@ class UserController {
       if (!email || !username || !password) {
         const err = new Error("All the fields required!");
         err.statusCode = 400;
+        err.code = "MISSING_FIELDS"; // Set custom error code
         return next(err);
       }
       // Check if the username is already taken
@@ -16,6 +20,7 @@ class UserController {
       if (isUsernameTaken) {
         const err = new Error(isUsernameTaken);
         err.statusCode = 409; // Conflict - Username already exists
+        err.code = "USERNAME_EXISTS"; // Set custom error code
         return next(err);
       }
 
@@ -24,6 +29,7 @@ class UserController {
       if (isEmailRegistered) {
         const err = new Error(isEmailRegistered);
         err.statusCode = 409; // Conflict - Email already registered
+        err.code = "EMAIL_EXISTS"; // Set custom error code
         return next(err);
       }
       const ipAddress = getIPAddress(req);
@@ -34,10 +40,15 @@ class UserController {
         email,
         ipAddress,
       });
-
-      await user.save();
-      // Send a success response
-      res.status(201).json({ message: "User signed up successfully" });
+      try {
+        await user.save();
+        // Send a success response
+        res.status(201).json({ message: "User signed up successfully" });
+      } catch (error) {
+        handleValidationError(error, "password", next);
+        handleValidationError(error, "username", next);
+        handleValidationError(error, "email", next);
+      }
     } catch (error) {
       return next(error);
     }
