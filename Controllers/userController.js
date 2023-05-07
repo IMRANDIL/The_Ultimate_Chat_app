@@ -2,6 +2,7 @@ const {
   handleValidationError,
 } = require("../Middlewares/customErrorMiddleware");
 const User = require("../Models/userModel");
+const sendResetPasswordEmail = require("../Utils/mailUtils");
 const UserUtility = require("../Utils/userUtility");
 const {
   getIPAddress,
@@ -170,6 +171,7 @@ class UserController {
   static forgotPassword = async (req, res, next) => {
     try {
       const { email } = req.body;
+      let user;
 
       if (!email) {
         const err = new Error("Email is required!");
@@ -189,7 +191,7 @@ class UserController {
 
       try {
         // Check if the user exists
-        const user = await User.findOne({ email });
+        user = await User.findOne({ email });
         if (!user) {
           const err = new Error("User not found!");
           err.statusCode = 404;
@@ -211,7 +213,7 @@ class UserController {
       }
 
       // Send an email to the user with the reset token
-      // sendResetPasswordEmail(user.email, resetToken);
+      await sendResetPasswordEmail(user.email, resetToken, next);
       // Send a success response
       res
         .status(200)
