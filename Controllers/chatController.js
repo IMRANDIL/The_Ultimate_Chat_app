@@ -8,8 +8,10 @@ exports.createChat = async (req, res) => {
     const newChat = new Chat({ participants });
     const savedChat = await newChat.save();
 
+    const chatSocketInstance = chatSocket(req.app.get("io"));
+
     // Emit the new chat event to all participants
-    chatSocket.emitNewChat(savedChat);
+    chatSocketInstance.emitNewChat(savedChat);
 
     res.status(201).json(savedChat);
   } catch (error) {
@@ -49,9 +51,10 @@ exports.addMessage = async (req, res) => {
     chat.messages.push(newMessage);
     await chat.save();
 
+    const chatSocketInstance = chatSocket(req.app.get("io"));
     // Emit the new message event to all participants in the chat room
     chat.participants.forEach((participant) => {
-      chatSocket.emitNewMessage(participant, newMessage);
+      chatSocketInstance.emitNewMessage(participant, newMessage);
     });
 
     res.status(200).json(chat);

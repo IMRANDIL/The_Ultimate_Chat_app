@@ -37,6 +37,7 @@ connectDB()
     //initilaize the socket
 
     const io = socketIO(server);
+    app.set("io", io);
 
     chatSocket(io);
 
