@@ -1,4 +1,5 @@
 const Chat = require("../Models/chatModel");
+const User = require("../Models/userModel");
 const chatSocket = require("../Socket/chatSocket");
 const { validationResult } = require("express-validator");
 
@@ -12,6 +13,13 @@ exports.createChat = async (req, res) => {
 
   try {
     const { participants } = req.body;
+
+    // Check if all participants exist in the User model
+    const participantsExist = await User.find({ _id: { $in: participants } });
+    if (participantsExist.length !== participants.length) {
+      return res.status(400).json({ error: "Invalid participants" });
+    }
+
     const newChat = new Chat({ participants });
     const savedChat = await newChat.save();
 
