@@ -1,4 +1,4 @@
-const Chat = require("../models/chat");
+const Chat = require("../Models/chatModel");
 const chatSocket = require("../Socket/chatSocket");
 
 // Create a new chat

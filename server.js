@@ -21,6 +21,7 @@ app.use(cors());
 //routing middleware comes here
 
 app.use("/api/v1", require("./Router/userRouter"));
+app.use("/api/v1/chats", require("./Router/chatRouter"));
 
 //custom error middleware comes here
 
