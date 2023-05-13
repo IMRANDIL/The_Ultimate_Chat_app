@@ -3,8 +3,10 @@ require("dotenv").config();
 const express = require("express");
 const connectDB = require("./Config/dbConfig");
 const cors = require("cors");
+const socketIO = require("socket.io");
 const compression = require("compression");
 const logger = require("./Utils/logger");
+const chatSocket = require("./Socket/chatSocket");
 const { customErrorHandler } = require("./Middlewares/customErrorMiddleware");
 
 const app = express();
@@ -30,6 +32,12 @@ connectDB()
     const server = app.listen(PORT, () => {
       logger.info(`Server started on port ${PORT}`);
     });
+
+    //initilaize the socket
+
+    const io = socketIO(server);
+
+    chatSocket(io);
 
     server.on("error", (err) => {
       logger.error(`Error starting the server: ${err.message}`);
