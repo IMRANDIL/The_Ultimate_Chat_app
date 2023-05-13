@@ -14,4 +14,19 @@ module.exports = (io) => {
       console.log("User disconnected");
     });
   });
+
+  // Emit event for a new chat
+  const emitNewChat = (chat) => {
+    io.emit("newChat", chat);
+  };
+
+  // Emit event for a new message
+  const emitNewMessage = (participant, message) => {
+    io.to(participant).emit("newMessage", message);
+  };
+
+  return {
+    emitNewChat,
+    emitNewMessage,
+  };
 };
