@@ -1,8 +1,15 @@
 const Chat = require("../Models/chatModel");
 const chatSocket = require("../Socket/chatSocket");
+const { validationResult } = require("express-validator");
 
 // Create a new chat
 exports.createChat = async (req, res) => {
+  // Validate request body
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const { participants } = req.body;
     const newChat = new Chat({ participants });
