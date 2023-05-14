@@ -2,25 +2,21 @@ const jwt = require("jsonwebtoken");
 const User = require("../Models/userModel");
 
 exports.authMiddleware = async (req, res, next) => {
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = token && jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select("-password");
-      next();
-    } catch (error) {
-      const err = new Error("Authorization Failed, Invalid Token");
+  try {
+    const token = req.cookies.accessToken;
+
+    if (!token) {
+      const err = new Error("Authorization Failed, No Token");
       err.statusCode = 401;
       err.code = "AUTHORIZATION_ERROR";
       return next(err);
     }
-  }
-  if (!token) {
-    const err = new Error("Authorization Failed, No Token");
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id).select("-password");
+    next();
+  } catch (error) {
+    const err = new Error("Authorization Failed, Invalid Token");
     err.statusCode = 401;
     err.code = "AUTHORIZATION_ERROR";
     return next(err);
@@ -28,7 +24,7 @@ exports.authMiddleware = async (req, res, next) => {
 };
 
 exports.accessTokenMiddleware = async (req, res, next) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
     const err = new Error("Refresh token is required");

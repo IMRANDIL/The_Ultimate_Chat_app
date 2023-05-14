@@ -4,6 +4,7 @@ const {
 const User = require("../Models/userModel");
 const sendResetPasswordEmail = require("../Utils/mailUtils");
 const UserUtility = require("../Utils/userUtility");
+const Cookies = require("js-cookie");
 const {
   getIPAddress,
   generateJWTToken,
@@ -129,12 +130,23 @@ class UserController {
         process.env.JWT_REFRESH_SECRET_EXPIRATION
       );
 
+      // Set cookies in the response
+      Cookies.set("accessToken", accessToken, {
+        expires: 7,
+        secure: true,
+        sameSite: "strict",
+      });
+      Cookies.set("refreshToken", refreshToken, {
+        expires: 30,
+        secure: true,
+        sameSite: "strict",
+      });
+
       //now send the response
       res.status(200).json({
-        accessToken,
-        refreshToken,
         email: user.email,
         username: user.username,
+        id: user._id,
       });
 
       //
