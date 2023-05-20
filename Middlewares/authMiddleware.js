@@ -2,21 +2,32 @@ const jwt = require("jsonwebtoken");
 const User = require("../Models/userModel");
 
 exports.authMiddleware = async (req, res, next) => {
-  try {
-    const token = req.cookies.accessToken;
+  let token;
 
-    if (!token) {
-      const err = new Error("Authorization Failed, No Token");
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    // Token is present in the authorization header
+    token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookies && req.cookies.accessToken) {
+    // Token is present in the accessToken cookie
+    token = req.cookies.accessToken;
+  }
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.id).select("-password");
+      next();
+    } catch (error) {
+      const err = new Error("Authorization Failed, Invalid Token");
       err.statusCode = 401;
       err.code = "AUTHORIZATION_ERROR";
       return next(err);
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id).select("-password");
-    next();
-  } catch (error) {
-    const err = new Error("Authorization Failed, Invalid Token");
+  } else {
+    const err = new Error("Authorization Failed, No Token");
     err.statusCode = 401;
     err.code = "AUTHORIZATION_ERROR";
     return next(err);
