@@ -14,16 +14,21 @@ const app = express();
 
 const PORT = process.env.PORT || 9012;
 
+app.use(cookies());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression());
+// Enable CORS with credentials
 app.use(cors());
-app.use(cookies());
 
 //routing middleware comes here
 
 app.use("/api/v1", require("./Router/userRouter"));
 app.use("/api/v1/chats", require("./Router/chatRouter"));
+
+app.get("/test-cookies", (req, res) => {
+  res.send(req.cookies);
+});
 
 //custom error middleware comes here
 

@@ -137,20 +137,20 @@ class UserController {
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Expires in 7 days
         secure: false,
         httpOnly: true,
-        sameSite: "strict",
       });
 
       res.cookie("refreshToken", refreshToken, {
         expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days
         secure: false,
         httpOnly: true,
-        sameSite: "strict",
       });
       //now send the response
       res.status(200).json({
         email: user.email,
         username: user.username,
         id: user._id,
+        accessToken,
+        refreshToken,
       });
 
       //
