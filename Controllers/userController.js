@@ -239,7 +239,6 @@ class UserController {
     try {
       let user;
       const { resetToken, newPassword } = req.body;
-
       if (!resetToken || !newPassword) {
         const err = new Error("Reset token and new password are required!");
         err.statusCode = 400;
