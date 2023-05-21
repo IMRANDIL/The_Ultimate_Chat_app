@@ -1,27 +1,52 @@
 const Chat = require("../Models/chatModel");
 const User = require("../Models/userModel");
 const chatSocket = require("../Socket/chatSocket");
-const { validationResult } = require("express-validator");
+// const { validationResult } = require("express-validator");
 
 // Create a new chat
 exports.createChat = async (req, res) => {
-  // Validate request body
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+  const { participantId } = req.body;
+
+  if (!participantId) {
+    const err = new Error("ParticipantId required!");
+    err.statusCode = 400;
+    err.code = "MISSING_FIELDS"; // Set custom error code
+    return next(err);
   }
 
   try {
-    const { participants } = req.body;
-
-    // Check if all participants exist in the User model
-    const participantsExist = await User.find({ _id: { $in: participants } });
-    if (participantsExist.length !== participants.length) {
-      return res.status(400).json({ error: "Invalid participants" });
+    // Check if participantId exist in the User model
+    const participantsExist = await User.findOne({ _id: participantId });
+    if (!participantsExist) {
+      const err = new Error("User does not exist!");
+      err.statusCode = 404;
+      err.code = "NOT_FOUND"; // Set custom error code
+      return next(err);
     }
 
-    const newChat = new Chat({ participants });
-    const savedChat = await newChat.save();
+    //check if chat exists...
+    let isChatExists = await Chat.find({
+      isGroupChat: false,
+      $and: [
+        {
+          participants: {
+            $elemMatch: {
+              $eq: req.user._id,
+            },
+          },
+        },
+        {
+          participants: {
+            $elemMatch: {
+              $eq: participantId,
+            },
+          },
+        },
+      ],
+    }).populate("participants", "-password");
+
+    // const newChat = new Chat({ participants });
+    // const savedChat = await newChat.save();
 
     const chatSocketInstance = chatSocket(req.app.get("io"));
 
