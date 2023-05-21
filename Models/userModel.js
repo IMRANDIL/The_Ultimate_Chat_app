@@ -52,6 +52,10 @@ const userSchema = new mongoose.Schema(
         code: "INVALID_PASSWORD", // Set the error code for invalid password
       },
     },
+    profilePic: {
+      type: String,
+      required: true,
+    },
     ipAddress: {
       type: String,
       required: true,

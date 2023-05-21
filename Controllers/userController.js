@@ -14,9 +14,10 @@ const {
 
 class UserController {
   static userSignUp = async (req, res, next) => {
+    console.log(req);
     try {
-      const { email, username, password } = req.body;
-      if (!email || !username || !password) {
+      const { email, username, password, file } = req.body;
+      if (!email || !username || !password || !file) {
         const err = new Error("All the fields required!");
         err.statusCode = 400;
         err.code = "MISSING_FIELDS"; // Set custom error code
@@ -57,6 +58,7 @@ class UserController {
         password,
         email,
         ipAddress,
+        profilePic: file,
       });
       try {
         await user.save();
