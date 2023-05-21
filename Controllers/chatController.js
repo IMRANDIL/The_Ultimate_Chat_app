@@ -1,8 +1,6 @@
 const Chat = require("../Models/chatModel");
 const User = require("../Models/userModel");
 const Message = require("../Models/messageModel");
-// const chatSocket = require("../Socket/chatSocket");
-// const { validationResult } = require("express-validator");
 
 // Create a new chat
 
@@ -46,6 +44,7 @@ exports.createChat = async (req, res, next) => {
     } else {
       // Create the chat
       const chatData = {
+        chatName: "sender",
         participants: [req.user._id, participantId],
       };
 
@@ -54,12 +53,6 @@ exports.createChat = async (req, res, next) => {
         "participants",
         "-password"
       );
-
-      // const chatSocketInstance = chatSocket(req.app.get("io"));
-
-      // Emit the new chat event to all participants
-      // chatSocketInstance.emitNewChat(savedChat);
-
       res.status(201).json(fullChat);
     }
   } catch (error) {
