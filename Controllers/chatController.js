@@ -56,8 +56,7 @@ exports.createChat = async (req, res, next) => {
       res.status(201).json(fullChat);
     }
   } catch (error) {
-    console.error("Error creating chat:", error);
-    res.status(500).json({ error: "Failed to create chat" });
+    return next(error);
   }
 };
 
@@ -112,6 +111,7 @@ exports.getChatByUserId = async (req, res) => {
       participants: { $elemMatch: { $eq: req.user._id } },
     })
       .populate("participants", "-password")
+      .populate("groupAdmin", "-password")
       .populate("latestMessage")
       .sort({ updatedAt: -1 });
     chatByUserId = await User.populate(chatByUserId, {
@@ -120,9 +120,47 @@ exports.getChatByUserId = async (req, res) => {
     });
     res.status(200).send(chatByUserId);
   } catch (error) {
-    console.error("Error retrieving chat:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to retrieve chat by logged in User" });
+    return next(error);
+  }
+};
+
+//create group chat...
+
+exports.createGroupChat = async (req, res, next) => {
+  if (!req.body.name || !req.body.participants) {
+    const err = new Error("All the fields required!");
+    err.statusCode = 400;
+    err.code = "MISSING_FIELDS"; // Set custom error code
+    return next(err);
+  }
+
+  let participants = JSON.parse(req.body.participants);
+
+  //push currenct logged in user as well in the chat
+  participants.push(req.user);
+
+  if (participants.length < 2) {
+    const err = new Error(
+      "Two or More than two participants required to form a group chat!"
+    );
+    err.statusCode = 400;
+    err.code = "MINIMUM_CRITERIA"; // Set custom error code
+    return next(err);
+  }
+
+  try {
+    const groupChat = await Chat.create({
+      chatName: req.body.name,
+      participants: participants,
+      isGroupChat: true,
+      groupAdmin: req.user,
+    });
+
+    const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
+      .populate("participants", "-password")
+      .populate("groupAdmin", "-password");
+    res.status(200).send(fullGroupChat);
+  } catch (error) {
+    return next(error);
   }
 };

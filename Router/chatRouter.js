@@ -10,6 +10,9 @@ router.post("/", authMiddleware, chatController.createChat);
 //get chats by logged in user Id
 router.get("/", authMiddleware, chatController.getChatByUserId);
 
+//creat chat group
+router.post("/group", authMiddleware, chatController.createGroupChat);
+
 // Get chat by  chat ID
 router.get("/:id", authMiddleware, chatController.getChatById);
 
