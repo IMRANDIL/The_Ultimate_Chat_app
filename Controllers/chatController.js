@@ -202,7 +202,34 @@ exports.renameGroupChat = async (req, res, next) => {
 //add to some one to group chat...
 
 exports.addToGroupChat = async (req, res, next) => {
+  const { chatId, participantId } = req.body;
+
+  if (!chatId || !participantId) {
+    const err = new Error("ChatId and participantId required!");
+    err.statusCode = 400;
+    err.code = "MISSING_FIELDS"; // Set custom error code
+    return next(err);
+  }
+
   try {
+    const updatedGroup = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $push: { participants: participantId },
+      },
+      { new: true }
+    )
+      .populate("participants", "-password")
+      .populate("groupAdmin", "-password");
+
+    if (!updatedGroup) {
+      const err = new Error("Error adding participant to the group");
+      err.statusCode = 400;
+      err.code = "UPDATION_ERROR"; // Set custom error code
+      return next(err);
+    }
+
+    res.status(200).send(updatedGroup);
   } catch (error) {
     return next(error);
   }
@@ -211,7 +238,34 @@ exports.addToGroupChat = async (req, res, next) => {
 //remove someone from the group chat...
 
 exports.removeFromGroupChat = async (req, res, next) => {
+  const { chatId, participantId } = req.body;
+
+  if (!chatId || !participantId) {
+    const err = new Error("ChatId and participantId required!");
+    err.statusCode = 400;
+    err.code = "MISSING_FIELDS"; // Set custom error code
+    return next(err);
+  }
+
   try {
+    const updatedGroup = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $pull: { participants: participantId },
+      },
+      { new: true }
+    )
+      .populate("participants", "-password")
+      .populate("groupAdmin", "-password");
+
+    if (!updatedGroup) {
+      const err = new Error("Error removing participant to the group");
+      err.statusCode = 400;
+      err.code = "UPDATION_ERROR"; // Set custom error code
+      return next(err);
+    }
+
+    res.status(200).send(updatedGroup);
   } catch (error) {
     return next(error);
   }
