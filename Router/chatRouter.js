@@ -17,7 +17,14 @@ router.post("/group", authMiddleware, chatController.createGroupChat);
 router.put("/rename-group", authMiddleware, chatController.renameGroupChat);
 
 //add someone to group
-router.put("/add-to-group", authMiddleware, chatController.addToGroupChat);
+router.post("/add-to-group", authMiddleware, chatController.addToGroupChat);
+
+// remove someone from group
+router.post(
+  "/remove-from-group",
+  authMiddleware,
+  chatController.removeFromGroupChat
+);
 
 // Get chat by  chat ID
 router.get("/:id", authMiddleware, chatController.getChatById);

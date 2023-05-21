@@ -207,3 +207,12 @@ exports.addToGroupChat = async (req, res, next) => {
     return next(error);
   }
 };
+
+//remove someone from the group chat...
+
+exports.removeFromGroupChat = async (req, res, next) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};
