@@ -164,3 +164,46 @@ exports.createGroupChat = async (req, res, next) => {
     return next(error);
   }
 };
+
+//rename group chat...
+
+exports.renameGroupChat = async (req, res, next) => {
+  const { chatId, chatName } = req.body;
+
+  if (!chatId || !chatName) {
+    const err = new Error("ChatId and chatName required!");
+    err.statusCode = 400;
+    err.code = "MISSING_FIELDS"; // Set custom error code
+    return next(err);
+  }
+
+  try {
+    const updateChatGroupName = await Chat.findByIdAndUpdate(
+      chatId,
+      { chatName: chatName },
+      { new: true }
+    )
+      .populate("participants", "-password")
+      .populate("groupAdmin", "-password");
+
+    if (!updateChatGroupName) {
+      const err = new Error("Error updating chat group name");
+      err.statusCode = 400;
+      err.code = "UPDATION_ERROR"; // Set custom error code
+      return next(err);
+    }
+
+    res.status(200).send(updateChatGroupName);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+//add to some one to group chat...
+
+exports.addToGroupChat = async (req, res, next) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};

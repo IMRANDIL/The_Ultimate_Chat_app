@@ -13,6 +13,12 @@ router.get("/", authMiddleware, chatController.getChatByUserId);
 //creat chat group
 router.post("/group", authMiddleware, chatController.createGroupChat);
 
+//rename group name
+router.put("/rename-group", authMiddleware, chatController.renameGroupChat);
+
+//add someone to group
+router.put("/add-to-group", authMiddleware, chatController.addToGroupChat);
+
 // Get chat by  chat ID
 router.get("/:id", authMiddleware, chatController.getChatById);
 
