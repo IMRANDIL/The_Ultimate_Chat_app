@@ -14,7 +14,6 @@ const {
 
 class UserController {
   static userSignUp = async (req, res, next) => {
-    console.log(req);
     try {
       const { email, username, password, file } = req.body;
       if (!email || !username || !password || !file) {
