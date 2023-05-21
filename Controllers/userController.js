@@ -174,8 +174,17 @@ class UserController {
   };
 
   static allUsers = async (req, res, next) => {
+    const keyword = req.query.search
+      ? {
+          $or: [
+            { username: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+          ],
+        }
+      : {};
+
     try {
-      const allUser = await User.find({}, "_id email username");
+      const allUser = await User.find(keyword, "_id email username");
       res.status(200).json({
         data: allUser,
       });
