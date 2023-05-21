@@ -111,3 +111,25 @@ exports.addMessage = async (req, res) => {
     res.status(500).json({ error: "Failed to add message" });
   }
 };
+
+// Get chat by logged in userID
+exports.getChatByUserId = async (req, res) => {
+  try {
+    let chatByUserId = await Chat.find({
+      participants: { $elemMatch: { $eq: req.user._id } },
+    })
+      .populate("participants", "-password")
+      .populate("latestMessage")
+      .sort({ updatedAt: -1 });
+    chatByUserId = await User.populate(chatByUserId, {
+      path: "latestMessage.sender",
+      select: "email username ipAddress",
+    });
+    res.status(200).send(chatByUserId);
+  } catch (error) {
+    console.error("Error retrieving chat:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to retrieve chat by logged in User" });
+  }
+};
