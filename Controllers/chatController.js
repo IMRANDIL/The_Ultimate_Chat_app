@@ -26,7 +26,7 @@ exports.createChat = async (req, res, next) => {
       return next(err);
     }
 
-    // Check if chat exists between the current user and the participant
+    // Check if chat exists between the current user and the participant...one to one
     let chatExists = await Chat.find({
       isGroupChat: false,
       participants: {
