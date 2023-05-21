@@ -1,10 +1,12 @@
 const Chat = require("../Models/chatModel");
 const User = require("../Models/userModel");
-const chatSocket = require("../Socket/chatSocket");
+const Message = require("../Models/messageModel");
+// const chatSocket = require("../Socket/chatSocket");
 // const { validationResult } = require("express-validator");
 
 // Create a new chat
-exports.createChat = async (req, res) => {
+
+exports.createChat = async (req, res, next) => {
   const { participantId } = req.body;
 
   if (!participantId) {
@@ -15,45 +17,51 @@ exports.createChat = async (req, res) => {
   }
 
   try {
-    // Check if participantId exist in the User model
-    const participantsExist = await User.findOne({ _id: participantId });
-    if (!participantsExist) {
+    // Check if participantId exists in the User model
+    const participantExists = await User.exists({ _id: participantId });
+    if (!participantExists) {
       const err = new Error("User does not exist!");
       err.statusCode = 404;
       err.code = "NOT_FOUND"; // Set custom error code
       return next(err);
     }
 
-    //check if chat exists...
-    let isChatExists = await Chat.find({
+    // Check if chat exists between the current user and the participant
+    let chatExists = await Chat.find({
       isGroupChat: false,
-      $and: [
-        {
-          participants: {
-            $elemMatch: {
-              $eq: req.user._id,
-            },
-          },
-        },
-        {
-          participants: {
-            $elemMatch: {
-              $eq: participantId,
-            },
-          },
-        },
-      ],
-    }).populate("participants", "-password");
+      participants: {
+        $all: [req.user._id, participantId],
+      },
+    })
+      .populate("participants", "-password")
+      .populate("latestMessage");
 
-    // const newChat = new Chat({ participants });
-    // const savedChat = await newChat.save();
+    chatExists = await User.populate(chatExists, {
+      path: "latestMessage.sender",
+      select: "email username ipAddress",
+    });
 
-    const chatSocketInstance = chatSocket(req.app.get("io"));
+    if (chatExists.length > 0) {
+      return res.status(200).json(chatExists[0]);
+    } else {
+      // Create the chat
+      const chatData = {
+        participants: [req.user._id, participantId],
+      };
 
-    // Emit the new chat event to all participants
-    chatSocketInstance.emitNewChat(savedChat);
+      const newChat = await Chat.create(chatData);
+      const fullChat = await Chat.findOne({ _id: newChat._id }).populate(
+        "participants",
+        "-password"
+      );
 
-    res.status(201).json(savedChat);
+      // const chatSocketInstance = chatSocket(req.app.get("io"));
+
+      // Emit the new chat event to all participants
+      // chatSocketInstance.emitNewChat(savedChat);
+
+      res.status(201).json(fullChat);
+    }
   } catch (error) {
     console.error("Error creating chat:", error);
     res.status(500).json({ error: "Failed to create chat" });
@@ -91,11 +99,11 @@ exports.addMessage = async (req, res) => {
     chat.messages.push(newMessage);
     await chat.save();
 
-    const chatSocketInstance = chatSocket(req.app.get("io"));
+    // const chatSocketInstance = chatSocket(req.app.get("io"));
     // Emit the new message event to all participants in the chat room
-    chat.participants.forEach((participant) => {
-      chatSocketInstance.emitNewMessage(participant, newMessage);
-    });
+    // chat.participants.forEach((participant) => {
+    //   chatSocketInstance.emitNewMessage(participant, newMessage);
+    // });
 
     res.status(200).json(chat);
   } catch (error) {
