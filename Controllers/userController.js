@@ -173,6 +173,8 @@ class UserController {
     }
   };
 
+  //all users but not the logged in user...
+
   static allUsers = async (req, res, next) => {
     const keyword = req.query.search
       ? {
@@ -184,7 +186,9 @@ class UserController {
       : {};
 
     try {
-      const allUser = await User.find(keyword, "_id email username");
+      const allUser = await User.find(keyword, "_id email username").find({
+        _id: { $ne: req.user._id },
+      });
       res.status(200).json({
         data: allUser,
       });
