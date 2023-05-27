@@ -14,7 +14,7 @@ const app = express();
 
 const PORT = process.env.PORT || 9012;
 
-app.use(cookies());
+app.use(cookies({ credentials: true, origin: "http://localhost:5173" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression());
