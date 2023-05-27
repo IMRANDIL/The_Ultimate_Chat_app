@@ -136,9 +136,6 @@ exports.createGroupChat = async (req, res, next) => {
 
   let participants = JSON.parse(req.body.participants);
 
-  //push currenct logged in user as well in the chat
-  participants.push(req.user);
-
   if (participants.length < 2) {
     const err = new Error(
       "Two or More than two participants required to form a group chat!"
@@ -147,6 +144,9 @@ exports.createGroupChat = async (req, res, next) => {
     err.code = "MINIMUM_CRITERIA"; // Set custom error code
     return next(err);
   }
+
+  //push currenct logged in user as well in the chat
+  participants.push(req.user);
 
   try {
     const groupChat = await Chat.create({
