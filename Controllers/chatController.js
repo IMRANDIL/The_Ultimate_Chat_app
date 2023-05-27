@@ -36,7 +36,7 @@ exports.createChat = async (req, res, next) => {
 
     chatExists = await User.populate(chatExists, {
       path: "latestMessage.sender",
-      select: "email username ipAddress",
+      select: "email username profilePic ipAddress",
     });
 
     if (chatExists.length > 0) {
@@ -116,7 +116,7 @@ exports.getChatByUserId = async (req, res) => {
       .sort({ updatedAt: -1 });
     chatByUserId = await User.populate(chatByUserId, {
       path: "latestMessage.sender",
-      select: "email username ipAddress",
+      select: "email username profilePic ipAddress",
     });
     res.status(200).send(chatByUserId);
   } catch (error) {
