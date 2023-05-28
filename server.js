@@ -14,12 +14,12 @@ const app = express();
 
 const PORT = process.env.PORT || 9012;
 
-app.use(cookies({ credentials: true, origin: "http://localhost:5173" }));
+app.use(cookies());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 // Enable CORS with credentials
-app.use(cors());
+app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 
 //routing middleware comes here
 
