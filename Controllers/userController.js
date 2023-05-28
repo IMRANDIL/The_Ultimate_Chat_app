@@ -135,14 +135,14 @@ class UserController {
 
       // Set cookies in the response
       res.cookie("accessToken", accessToken, {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Expires in 7 days
+        expires: new Date(Date.now() + 1 * 60 * 60 * 1000), // Expires in 7 days
         secure: false,
         httpOnly: true,
         sameSite: "lax",
       });
 
       res.cookie("refreshToken", refreshToken, {
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days
+        expires: new Date(Date.now() + 6 * 60 * 60 * 1000), // Expires in 30 days
         secure: false,
         httpOnly: true,
         sameSite: "lax",
@@ -188,7 +188,10 @@ class UserController {
       : {};
 
     try {
-      const allUser = await User.find(keyword, "_id email username").find({
+      const allUser = await User.find(
+        keyword,
+        "_id email username profilePic"
+      ).find({
         _id: { $ne: req.user._id },
       });
       res.status(200).json({
