@@ -152,6 +152,7 @@ class UserController {
         email: user.email,
         username: user.username,
         id: user._id,
+        profilePic: user.profilePic,
       });
 
       //
