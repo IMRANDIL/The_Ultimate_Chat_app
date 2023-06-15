@@ -135,7 +135,7 @@ class UserController {
 
       // Set cookies in the response
       res.cookie("accessToken", accessToken, {
-        expires: new Date(Date.now() + 1 * 60 * 60 * 1000), // Expires in 7 days
+        expires: new Date(Date.now() + 1 * 60 * 60 * 1000), // Expires in hour
         secure: false,
         httpOnly: true,
         sameSite: "lax",
@@ -169,7 +169,15 @@ class UserController {
         process.env.JWT_SECRET,
         process.env.JWT_SECRET_EXPIRATION
       );
-      return res.status(200).json({ accessToken });
+
+      // Set cookies in the response
+      res.cookie("accessToken", accessToken, {
+        expires: new Date(Date.now() + 1 * 60 * 60 * 1000), // Expires in hour
+        secure: false,
+        httpOnly: true,
+        sameSite: "lax",
+      });
+      return res.status(200).json({ success: true });
     } catch (error) {
       return next(error);
     }
