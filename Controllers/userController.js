@@ -142,7 +142,7 @@ class UserController {
       });
 
       res.cookie("refreshToken", refreshToken, {
-        expires: new Date(Date.now() + 6 * 60 * 60 * 1000), // Expires in 30 days
+        expires: new Date(Date.now() + 3 * 60 * 60 * 1000), // Expires in 3 hours
         secure: false,
         httpOnly: true,
         sameSite: "lax",
@@ -185,7 +185,7 @@ class UserController {
       });
 
       res.cookie("refreshToken", refreshToken, {
-        expires: new Date(Date.now() + 6 * 60 * 60 * 1000), // Expires in 6 hours
+        expires: new Date(Date.now() + 3 * 60 * 60 * 1000), // Expires in 3 hours
         secure: false,
         httpOnly: true,
         sameSite: "lax",
