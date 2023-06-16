@@ -170,6 +170,12 @@ class UserController {
         process.env.JWT_SECRET_EXPIRATION
       );
 
+      const refreshToken = await generateJWTToken(
+        req.user._id,
+        process.env.JWT_REFRESH_SECRET,
+        process.env.JWT_REFRESH_SECRET_EXPIRATION
+      );
+
       // Set cookies in the response
       res.cookie("accessToken", accessToken, {
         expires: new Date(Date.now() + 1 * 60 * 60 * 1000), // Expires in hour
@@ -177,6 +183,14 @@ class UserController {
         httpOnly: true,
         sameSite: "lax",
       });
+
+      res.cookie("refreshToken", refreshToken, {
+        expires: new Date(Date.now() + 6 * 60 * 60 * 1000), // Expires in 6 hours
+        secure: false,
+        httpOnly: true,
+        sameSite: "lax",
+      });
+
       return res.status(200).json({ success: true });
     } catch (error) {
       return next(error);
