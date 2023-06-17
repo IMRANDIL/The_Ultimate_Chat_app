@@ -15,5 +15,6 @@ router.post(
   UserController.getNewAccessToken
 );
 router.get("/user/allUser", authMiddleware, UserController.allUsers);
+router.get("/user/logout", authMiddleware, UserController.logOutUser);
 
 module.exports = router;

@@ -323,6 +323,15 @@ class UserController {
       return next(error);
     }
   };
+
+  static logOutUser = (req, res, next) => {
+    // Clear cookies on the server-side
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    // Redirect or send a response indicating successful logout
+    res.json({ message: "Logged out successfully" });
+  };
 }
 
 module.exports = UserController;
