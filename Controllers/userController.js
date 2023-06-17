@@ -153,6 +153,7 @@ class UserController {
         username: user.username,
         id: user._id,
         profilePic: user.profilePic,
+        loggedInAt: new Date(),
       });
 
       //
