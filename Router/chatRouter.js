@@ -9,10 +9,10 @@ router.post("/", authMiddleware, chatController.createChat);
 
 //get all chats
 
-router.get("/", authMiddleware, chatController.fetchChats);
+// router.get("/", authMiddleware, chatController.fetchChats);
 
 //get chats by logged in user Id
-// router.get("/", authMiddleware, chatController.getChatByUserId);
+router.get("/", authMiddleware, chatController.getChatByUserId);
 
 //creat chat group
 router.post("/group", authMiddleware, chatController.createGroupChat);

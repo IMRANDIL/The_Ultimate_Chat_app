@@ -126,25 +126,25 @@ exports.getChatByUserId = async (req, res) => {
 
 //fetch Chats....
 
-exports.fetchChats = async (req, res, next) => {
-  try {
-    let allChats = Chat.find({
-      participants: { $elemMatch: { $eq: req.user._id } },
-    })
-      .populate("participants", "-password")
-      .populate("groupAdmin", "-password")
-      .populate("latestMessage")
-      .sort({ updatedAt: -1 });
+// exports.fetchChats = async (req, res, next) => {
+//   try {
+//     let allChats = Chat.find({
+//       participants: { $elemMatch: { $eq: req.user._id } },
+//     })
+//       .populate("participants", "-password")
+//       .populate("groupAdmin", "-password")
+//       .populate("latestMessage")
+//       .sort({ updatedAt: -1 });
 
-    allChats = await User.populate(allChats, {
-      path: "latestMessage.sender",
-      select: "email username profilePic ipAddress",
-    });
-    res.status(200).send(allChats);
-  } catch (error) {
-    return next(error);
-  }
-};
+//     allChats = await User.populate(allChats, {
+//       path: "latestMessage.sender",
+//       select: "email username profilePic ipAddress",
+//     });
+//     res.status(200).send(allChats);
+//   } catch (error) {
+//     return next(error);
+//   }
+// };
 
 //create group chat...
 
