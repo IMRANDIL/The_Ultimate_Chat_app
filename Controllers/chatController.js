@@ -61,19 +61,19 @@ exports.createChat = async (req, res, next) => {
 };
 
 // Get chat by ID
-exports.getChatById = async (req, res) => {
-  try {
-    const chatId = req.params.id;
-    const chat = await Chat.findById(chatId);
-    if (!chat) {
-      return res.status(404).json({ error: "Chat not found" });
-    }
-    res.status(200).json(chat);
-  } catch (error) {
-    console.error("Error retrieving chat:", error);
-    res.status(500).json({ error: "Failed to retrieve chat" });
-  }
-};
+// exports.getChatById = async (req, res) => {
+//   try {
+//     const chatId = req.params.id;
+//     const chat = await Chat.findById(chatId);
+//     if (!chat) {
+//       return res.status(404).json({ error: "Chat not found" });
+//     }
+//     res.status(200).json(chat);
+//   } catch (error) {
+//     console.error("Error retrieving chat:", error);
+//     res.status(500).json({ error: "Failed to retrieve chat" });
+//   }
+// };
 
 // Add a message to a chat
 exports.addMessage = async (req, res) => {

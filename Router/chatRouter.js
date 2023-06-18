@@ -31,7 +31,7 @@ router.post(
 );
 
 // Get chat by  chat ID
-router.get("/:id", authMiddleware, chatController.getChatById);
+// router.get("/:id", authMiddleware, chatController.getChatById);
 
 // Add a message to a chat
 router.post("/:id/message", authMiddleware, chatController.addMessage);
