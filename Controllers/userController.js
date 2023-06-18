@@ -165,6 +165,10 @@ class UserController {
 
   static getNewAccessToken = async (req, res, next) => {
     try {
+      // Clear cookies on the server-side
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+
       const accessToken = await generateJWTToken(
         req.user.id,
         process.env.JWT_SECRET,
