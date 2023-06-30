@@ -171,6 +171,15 @@ exports.createGroupChat = async (req, res, next) => {
   participants.push(req.user);
 
   try {
+    const isGroupChatNameNotUnique = await Chat.findOne({
+      chatName: req.body.name,
+    });
+    if (isGroupChatNameNotUnique) {
+      const err = new Error("Group chat name should be unique!");
+      err.statusCode = 400;
+      err.code = "UNIQUE_FIELDS"; // Set custom error code
+      return next(err);
+    }
     const groupChat = await Chat.create({
       chatName: req.body.name,
       participants: participants,
