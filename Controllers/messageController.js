@@ -42,4 +42,13 @@ exports.sendMsg = async (req, res, next) => {
   }
 };
 
-exports.getMsgByChatId = async (req, res, next) => {};
+exports.getMsgByChatId = async (req, res, next) => {
+  try {
+    const messages = await Message.find({ chat: req.params.chatId })
+      .populate("sender", "username profilePic email")
+      .populate("chat");
+    res.status(200).send(messages);
+  } catch (error) {
+    return next(error);
+  }
+};
