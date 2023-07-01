@@ -1,4 +1,5 @@
 const Chat = require("../Models/chatModel");
+const Message = require("../Models/messageModel");
 
 exports.sendMsg = async (req, res, next) => {
   const { chatId, content } = req.body;
@@ -9,13 +10,12 @@ exports.sendMsg = async (req, res, next) => {
     return next(err);
   }
 
-  const newMsg = {
-    sender: req.user._id,
-    content,
-    chat: chatId,
-  };
-
   try {
+    const newMsg = {
+      sender: req.user._id,
+      content,
+      chat: chatId,
+    };
     const isChatExist = await Chat.findOne({ _id: chatId });
     if (!isChatExist) {
       const err = new Error("Chat does not exist!");
@@ -23,7 +23,23 @@ exports.sendMsg = async (req, res, next) => {
       err.code = "NOT_EXIST"; // Set custom error code
       return next(err);
     }
-  } catch (error) {}
+
+    let message = await Message.create(newMsg);
+
+    message = await message.populate("sender", "username profilePic");
+    message = await message.populate("chat");
+    message = await User.populate(message, {
+      path: "chat.participants",
+      select: "username, profilePic, email",
+    });
+    await Chat.findByIdAndUpdate(chatId, {
+      latestMessage: message,
+    });
+
+    res.status(201).send(message);
+  } catch (error) {
+    return next(error);
+  }
 };
 
 exports.getMsgByChatId = async (req, res, next) => {};
