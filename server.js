@@ -25,6 +25,7 @@ app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 
 app.use("/api/v1", require("./Router/userRouter"));
 app.use("/api/v1/chats", require("./Router/chatRouter"));
+app.use("/api/v1/messages", require("./Router/messageRouter"));
 
 app.get("/test-cookies", (req, res) => {
   res.send(req.cookies);
