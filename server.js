@@ -44,7 +44,12 @@ connectDB()
 
     //initilaize the socket
 
-    const io = socketIO(server);
+    const io = socketIO(server, {
+      pingTimeout: 60000,
+      cors: {
+        origin: "http://localhost:5173",
+      },
+    });
     app.set("io", io);
 
     chatSocket(io);
