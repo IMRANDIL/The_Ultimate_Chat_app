@@ -13,6 +13,9 @@ module.exports = (io) => {
       console.log(`user joined this room: ${room}`);
     });
 
+    socket.on("typing", (room) => socket.in(room).emit("typing"));
+    socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+
     socket.on("new message", (newMsg) => {
       let chat = newMsg.chat;
 
@@ -25,6 +28,10 @@ module.exports = (io) => {
       //   socket.in(participant._id).emit("message received", newMsg);
       // });
       socket.to(chat._id).emit("message received", newMsg);
+    });
+    socket.off("setup", () => {
+      console.log("user disconnected");
+      socket.leave(userData._id);
     });
   });
 };
