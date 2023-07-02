@@ -7,5 +7,10 @@ module.exports = (io) => {
       socket.join(userData._id); //created a particular room for this userId
       socket.emit("connected");
     });
+
+    socket.on("join chat", (room) => {
+      socket.join(room);
+      console.log(`user joined this room: ${room}`);
+    });
   });
 };
