@@ -33,7 +33,7 @@ module.exports = (io) => {
     // Handle participant added event
     socket.on("participantAdded", (updatedChats) => {
       // Use the updatedChats array received from the client
-      console.log(updatedChats);
+
       updatedChats.forEach((chat) => {
         chat.participants.forEach((participant) => {
           socket.in(participant._id).emit("participant Added", chat);
