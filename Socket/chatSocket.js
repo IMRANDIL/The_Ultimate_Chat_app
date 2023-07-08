@@ -24,14 +24,14 @@ module.exports = (io) => {
 
       chat.participants.forEach((participant) => {
         if (participant._id == newMsg.sender._id) return;
-        console.log(participant);
+
         socket.in(participant._id).emit("message received", newMsg);
       });
       // socket.to(chat._id).emit("message received", newMsg);
     });
     socket.off("setup", () => {
       console.log("user disconnected");
-      socket.leave(userData._id);
+      socket.leave(userData.id);
     });
   });
 };
