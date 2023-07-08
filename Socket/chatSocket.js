@@ -4,7 +4,7 @@ module.exports = (io) => {
     console.log(`connected to socket.io`);
 
     socket.on("setup", (userData) => {
-      socket.join(userData._id); //created a particular room for this userId
+      socket.join(userData.id); //created a particular room for this userId
       socket.emit("connected");
     });
 
