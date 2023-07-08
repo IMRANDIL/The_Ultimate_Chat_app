@@ -22,12 +22,12 @@ module.exports = (io) => {
       if (!chat.participants)
         return console.log("chat.participants not defined");
 
-      // chat.participants.forEach((participant) => {
-      //   if (participant._id == newMsg.sender._id) return;
-      //   console.log(participant);
-      //   socket.in(participant._id).emit("message received", newMsg);
-      // });
-      socket.to(chat._id).emit("message received", newMsg);
+      chat.participants.forEach((participant) => {
+        if (participant._id == newMsg.sender._id) return;
+        console.log(participant);
+        socket.in(participant._id).emit("message received", newMsg);
+      });
+      // socket.to(chat._id).emit("message received", newMsg);
     });
     socket.off("setup", () => {
       console.log("user disconnected");

@@ -31,7 +31,7 @@ exports.sendMsg = async (req, res, next) => {
     message = await message.populate("chat");
     message = await User.populate(message, {
       path: "chat.participants",
-      select: "username, profilePic, email",
+      select: "username profilePic email",
     });
     await Chat.findByIdAndUpdate(chatId, {
       latestMessage: message,
