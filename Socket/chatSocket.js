@@ -51,12 +51,22 @@ module.exports = (io) => {
       });
     });
 
-    // Handle participant removed event
+    // Handle group rename event
     socket.on("groupRenamed", (updatedChats) => {
       // Use the updatedChats array received from the client
       updatedChats.forEach((chat) => {
         chat.participants.forEach((participant) => {
           socket.in(participant._id).emit("group Rename", chat);
+        });
+      });
+    });
+
+    // Handle group rename event
+    socket.on("groupChatCreation", (updatedChats) => {
+      // Use the updatedChats array received from the client
+      updatedChats.forEach((chat) => {
+        chat.participants.forEach((participant) => {
+          socket.in(participant._id).emit("group Creation", chat);
         });
       });
     });
