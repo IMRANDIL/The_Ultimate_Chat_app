@@ -29,6 +29,38 @@ module.exports = (io) => {
       });
       // socket.to(chat._id).emit("message received", newMsg);
     });
+
+    // Handle participant added event
+    socket.on("participantAdded", (updatedChats) => {
+      // Use the updatedChats array received from the client
+      console.log(updatedChats);
+      updatedChats.forEach((chat) => {
+        chat.participants.forEach((participant) => {
+          socket.in(participant._id).emit("participant Added", chat);
+        });
+      });
+    });
+
+    // Handle participant removed event
+    socket.on("participantRemoved", (updatedChats) => {
+      // Use the updatedChats array received from the client
+      updatedChats.forEach((chat) => {
+        chat.participants.forEach((participant) => {
+          socket.in(participant._id).emit("participant Removed", chat);
+        });
+      });
+    });
+
+    // Handle participant removed event
+    socket.on("groupRenamed", (updatedChats) => {
+      // Use the updatedChats array received from the client
+      updatedChats.forEach((chat) => {
+        chat.participants.forEach((participant) => {
+          socket.in(participant._id).emit("group Rename", chat);
+        });
+      });
+    });
+
     socket.off("setup", () => {
       console.log("user disconnected");
       socket.leave(userData.id);
